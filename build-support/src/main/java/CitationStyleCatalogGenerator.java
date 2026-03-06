@@ -39,6 +39,9 @@ import tools.jackson.databind.ObjectMapper;
 /// Has to be started in the root of the repository due to <https://github.com/jbangdev/jbang-gradle-plugin/issues/11>
 @AllowedToUseClassGetResource("Required for loading internal CSL styles")
 public class CitationStyleCatalogGenerator {
+    private CitationStyleCatalogGenerator() {
+        throw new UnsupportedOperationException();
+    }
     private static final Path STYLES_ROOT = Path.of("jablib/src/main/resources/csl-styles");
     private static final String CATALOG_PATH = "jablib/build/generated/resources/citation-style-catalog.json";
     private static final String DEFAULT_STYLE = "ieee.csl";
