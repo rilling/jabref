@@ -71,6 +71,7 @@ public class BibLogSettingsPane {
     }
 
     private FileDialogConfiguration createBlgFileDialogConfig() {
+        Path initialDir = viewModel.getInitialDirectory();
         FileDialogConfiguration config = new FileDialogConfiguration.Builder()
                 .addExtensionFilter(Localization.lang("BibTeX log files"), StandardFileType.BLG)
                 .withDefaultExtension(Localization.lang("BibTeX log files"), StandardFileType.BLG)
