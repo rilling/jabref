@@ -128,6 +128,7 @@ public class LibraryTab extends Tab implements CommandSelectionTab {
     private boolean backOrForwardNavigationActionTriggered = false;
 
     private BibDatabaseContext bibDatabaseContext;
+    private Long tabId;
 
     // All subscribers needing "coarse" change events should use this filter
     // See https://devdocs.jabref.org/code-howtos/eventbus.html for details
@@ -205,12 +206,8 @@ public class LibraryTab extends Tab implements CommandSelectionTab {
 
         // set LibraryTab ID for drag'n'drop
         // ID content doesn't matter, we only need different tabs to have different ID
-        Long randomId = new Random().nextLong();
-        if (randomId != null) {
-            this.tabId = Long.valueOf(randomId);
-        } else {
-            this.tabId = 0L; // Providing a default value to prevent crash
-        }
+        long nextRandom = new Random().nextLong();
+        this.tabId = nextRandom;
 
         setOnCloseRequest(this::onCloseRequest);
         setOnClosed(this::onClosed);
