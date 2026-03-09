@@ -37,7 +37,6 @@ public class DatabaseChangesResolverDialog extends BaseDialog<Boolean> {
     private final Map<DatabaseChange, DatabaseChangeDetailsView> detailsViewCache = new HashMap<>();
 
     @FXML
-    
     private TableView<DatabaseChange> changesTableView;
     @FXML
     private TableColumn<DatabaseChange, String> changeName;
