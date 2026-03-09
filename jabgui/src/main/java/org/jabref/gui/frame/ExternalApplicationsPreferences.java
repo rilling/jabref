@@ -1,6 +1,7 @@
 package org.jabref.gui.frame;
 
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -51,7 +52,7 @@ public class ExternalApplicationsPreferences {
         this(
                 Localization.lang("References"),                                             // eMailSubject
                 OS.WINDOWS,                                                                  // shouldAutoOpenEmailAttachmentsFolder
-                Set.copyOf(ExternalFileTypes.getDefaultExternalFileTypes()),                 // externalFileTypes
+                new HashSet<>(ExternalFileTypes.getDefaultExternalFileTypes()),              // externalFileTypes
                 false,                                                                       // useCustomTerminal
                 OS.WINDOWS ? "C:\\Program Files\\ConEmu\\ConEmu64.exe /single /dir \"%DIR\""
                            : "",                                                             // customTerminalCommand
