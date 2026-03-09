@@ -9,6 +9,7 @@ import org.jabref.model.ai.AiProvider;
 import org.jabref.model.ai.EmbeddingModel;
 
 public class AiDefaultPreferences {
+    
     public enum PredefinedChatModel {
         GPT_4O_MINI(AiProvider.OPEN_AI, "gpt-4o-mini", 128000),
         GPT_4O(AiProvider.OPEN_AI, "gpt-4o", 128000),
