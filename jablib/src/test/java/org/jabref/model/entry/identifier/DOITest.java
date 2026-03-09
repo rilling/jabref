@@ -119,10 +119,10 @@ class DOITest {
                 // parse short DOI with whitespace
                 Arguments.of("https://doi.org/10/gf4gqc", DOI.parse("https : / / doi.org / 10 / gf4gqc").get().getURIAsASCIIString()),
                 // parse DOI with non-ASCII characters and whitespace
-                Arguments.of("https://doi.org/10/gf4gqc", DOI.parse("\uFFFDhttps : \n  ␛ / / doi.org / \t 10 / \r gf4gqc\uFFFD␛").get().getURIAsASCIIString()),
-                Arguments.of("10/gf4gqc", DOI.parse("\uFFFDhttps : \n  ␛ / / doi.org / \t 10 / \r gf4gqc\uFFFD␛").get().asString()),
+                Arguments.of("https://doi.org/10/gf4gqc", DOI.parse("�https : \n  ␛ / / doi.org / \t 10 / \r gf4gqc�␛").get().getURIAsASCIIString()),
+                Arguments.of("10/gf4gqc", DOI.parse("�https : \n  ␛ / / doi.org / \t 10 / \r gf4gqc�␛").get().asString()),
                 Arguments.of("10/gf4gqc", DOI.parse(" 10 / gf4gqc ").get().asString()),
-                Arguments.of("10.3218/3846-0", DOI.parse(" \uFFFD10.3218\n/384␛6-0\uFFFD").get().asString()),
+                Arguments.of("10.3218/3846-0", DOI.parse(" �10.3218\n/384␛6-0�").get().asString()),
                 // parse DOI with backslashes
                 Arguments.of("10.1007/978-3-030-02671-4_7", DOI.parse("10.1007/978-3-030-02671-4\\_7").get().asString()),
                 Arguments.of("10.1007/978-3-030-02671-4_7", DOI.parse("10.1007/\\978-3-03\\0-02671-4\\_7").get().asString()),

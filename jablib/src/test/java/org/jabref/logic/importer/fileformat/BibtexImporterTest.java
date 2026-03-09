@@ -198,7 +198,7 @@ class BibtexImporterTest {
 
         // The test file contains "Test{NBSP}I. Last" where the character "{NBSP}" is encoded using Windows-1252 instead of UTF-8
         assertEquals(
-                List.of(new BibEntry(StandardEntryType.Article).withField(StandardField.AUTHOR, "Test\uFFFDI. Last")),
+                List.of(new BibEntry(StandardEntryType.Article).withField(StandardField.AUTHOR, "Test�I. Last")),
                 parserResult.getDatabase().getEntries());
     }
 

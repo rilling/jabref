@@ -187,7 +187,7 @@ public class DOI implements Identifier {
     /// @return an Optional containing the DOI or an empty Optional
     public static Optional<DOI> findInText(String text) {
         Optional<DOI> result = Optional.empty();
-        text = text.replaceAll("[\\uFFFD]", "");
+        text = text.replaceAll("[�]", "");
 
         Matcher matcher = FIND_DOI_PATT.matcher(text);
         if (matcher.find()) {
