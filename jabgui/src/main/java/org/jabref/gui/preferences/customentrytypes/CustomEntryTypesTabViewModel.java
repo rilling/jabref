@@ -79,8 +79,7 @@ public class CustomEntryTypesTabViewModel implements PreferenceTabViewModel {
         fieldValidator = new FunctionBasedValidator<>(
                 newFieldToAdd,
                 input -> StringUtil.isNotBlank(input) && !input.contains(" "),
-                ValidationMessage.error(Localization.lang("Field cannot be empty and must not contain spaces."))
-        );
+                ValidationMessage.error(Localization.lang("Field cannot be empty. Please enter a name.")));
     }
 
     @Override
@@ -137,11 +136,34 @@ public class CustomEntryTypesTabViewModel implements PreferenceTabViewModel {
         preferences.storeCustomEntryTypesRepository(entryTypesManager);
     }
 
+    // public EntryTypeViewModel addNewCustomEntryType() {
+    //     EntryType newentryType = new UnknownEntryType(entryTypeToAdd.getValue());
+    //     BibEntryType type = new BibEntryType(newentryType, new ArrayList<>(), List.of());
+    //     EntryTypeViewModel viewModel = new CustomEntryTypeViewModel(type, isMultiline);
+    //     this.entryTypesWithFields.add(viewModel);
+    //     this.entryTypeToAdd.setValue("");
+
+    //     return viewModel;
+    // }
+
     public EntryTypeViewModel addNewCustomEntryType() {
-        EntryType newentryType = new UnknownEntryType(entryTypeToAdd.getValue());
+        String newName = entryTypeToAdd.getValue().trim();
+
+        boolean exists = entryTypesWithFields.stream()
+                                             .anyMatch(type -> type.entryType().getValue().getType().getName().equalsIgnoreCase(newName));
+
+        if (exists) {
+            dialogService.showWarningDialogAndWait(
+                    "Duplicate entry type",
+                    "An entry type with this name already exists.");
+            return null;
+        }
+
+        EntryType newentryType = new UnknownEntryType(newName);
         BibEntryType type = new BibEntryType(newentryType, new ArrayList<>(), List.of());
-        EntryTypeViewModel entryTypeViewModel = new CustomEntryTypeViewModel(type, isMultiline);
-        this.entryTypesWithFields.add(entryTypeViewModel);
+        EntryTypeViewModel viewModel = new CustomEntryTypeViewModel(type, isMultiline);
+
+        this.entryTypesWithFields.add(viewModel);
         this.entryTypeToAdd.setValue("");
 
         return entryTypeViewModel;
@@ -178,8 +200,7 @@ public class CustomEntryTypesTabViewModel implements PreferenceTabViewModel {
 
     public boolean displayNameExists(String displayName) {
         ObservableList<FieldViewModel> entryFields = this.selectedEntryType.getValue().fields();
-        return entryFields.stream().anyMatch(fieldViewModel ->
-                fieldViewModel.displayNameProperty().getValue().equalsIgnoreCase(displayName));
+        return entryFields.stream().anyMatch(fieldViewModel -> fieldViewModel.displayNameProperty().getValue().equals(displayName));
     }
 
     public void removeField(FieldViewModel focusedItem) {
