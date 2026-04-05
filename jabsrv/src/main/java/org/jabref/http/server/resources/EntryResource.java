@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 @Path("libraries/{id}/entries/{entryId}")
 public class EntryResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(EntryResource.class);
+    private static final String NOT_AVAILABLE = "(N/A)";
 
     @Inject
     CliPreferences preferences;
@@ -58,35 +59,18 @@ public class EntryResource {
     @Produces(MediaType.TEXT_PLAIN + ";charset=UTF-8")
     public String getPlainRepresentation(@PathParam("id") String id, @PathParam("entryId") String entryId) throws IOException {
         BibDatabaseContext databaseContext = getDatabaseContext(id);
-        List<BibEntry> entriesByCitationKey = databaseContext.getDatabase().getEntriesByCitationKey(entryId);
-        if (entriesByCitationKey.isEmpty()) {
-            throw new NotFoundException("Entry with citation key '" + entryId + "' not found in library " + id);
-        }
-        if (entriesByCitationKey.size() > 1) {
-            LOGGER.warn("Multiple entries found with citation key '{}'. Using the first one.", entryId);
-        }
-
-        // TODO: Currently, the preview preferences are in GUI package, which is not accessible here.
-        // build the preview
-        BibEntry entry = entriesByCitationKey.getFirst();
-
-        String author = entry.getField(StandardField.AUTHOR).orElse("(N/A)");
-        String title = entry.getField(StandardField.TITLE).orElse("(N/A)");
-        String journal = entry.getField(StandardField.JOURNAL).orElse("(N/A)");
-        String volume = entry.getField(StandardField.VOLUME).orElse("(N/A)");
-        String number = entry.getField(StandardField.NUMBER).orElse("(N/A)");
-        String pages = entry.getField(StandardField.PAGES).orElse("(N/A)");
-        String releaseDate = entry.getField(StandardField.DATE).orElse("(N/A)");
+        BibEntry entry = getSingleEntryByCitationKey(databaseContext, id, entryId);
+        EntryPreviewData previewData = buildPreviewData(entry);
 
         // the only difference to the HTML version of this method is the format of the output:
         String preview =
-                "Author: " + author
-                        + "\nTitle: " + title
-                        + "\nJournal: " + journal
-                        + "\nVolume: " + volume
-                        + "\nNumber: " + number
-                        + "\nPages: " + pages
-                        + "\nReleased on: " + releaseDate;
+                "Author: " + previewData.author()
+                        + "\nTitle: " + previewData.title()
+                        + "\nJournal: " + previewData.journal()
+                        + "\nVolume: " + previewData.volume()
+                        + "\nNumber: " + previewData.number()
+                        + "\nPages: " + previewData.pages()
+                        + "\nReleased on: " + previewData.releaseDate();
 
         return preview;
     }
@@ -103,35 +87,18 @@ public class EntryResource {
     @Path("entries/{entryId}")
     @Produces(MediaType.TEXT_HTML + ";charset=UTF-8")
     public String getHTMLRepresentation(@PathParam("id") String id, @PathParam("entryId") String entryId) throws IOException {
-        List<BibEntry> entriesByCitationKey = getDatabaseContext(id).getDatabase().getEntriesByCitationKey(entryId);
-        if (entriesByCitationKey.isEmpty()) {
-            throw new NotFoundException("Entry with citation key '" + entryId + "' not found in library " + id);
-        }
-        if (entriesByCitationKey.size() > 1) {
-            LOGGER.warn("Multiple entries found with citation key '{}'. Using the first one.", entryId);
-        }
-
-        // TODO: Currently, the preview preferences are in GUI package, which is not accessible here.
-        // build the preview
-        BibEntry entry = entriesByCitationKey.getFirst();
-
-        String author = entry.getField(StandardField.AUTHOR).orElse("(N/A)");
-        String title = entry.getField(StandardField.TITLE).orElse("(N/A)");
-        String journal = entry.getField(StandardField.JOURNAL).orElse("(N/A)");
-        String volume = entry.getField(StandardField.VOLUME).orElse("(N/A)");
-        String number = entry.getField(StandardField.NUMBER).orElse("(N/A)");
-        String pages = entry.getField(StandardField.PAGES).orElse("(N/A)");
-        String releaseDate = entry.getField(StandardField.DATE).orElse("(N/A)");
+        BibEntry entry = getSingleEntryByCitationKey(getDatabaseContext(id), id, entryId);
+        EntryPreviewData previewData = buildPreviewData(entry);
 
         // the only difference to the plain text version of this method is the format of the output:
         String preview =
-                "<strong>Author:</strong> " + author + "<br>" +
-                        "<strong>Title:</strong> " + title + "<br>" +
-                        "<strong>Journal:</strong> " + journal + "<br>" +
-                        "<strong>Volume:</strong> " + volume + "<br>" +
-                        "<strong>Number:</strong> " + number + "<br>" +
-                        "<strong>Pages:</strong> " + pages + "<br>" +
-                        "<strong>Released on:</strong> " + releaseDate;
+                "<strong>Author:</strong> " + previewData.author() + "<br>" +
+                        "<strong>Title:</strong> " + previewData.title() + "<br>" +
+                        "<strong>Journal:</strong> " + previewData.journal() + "<br>" +
+                        "<strong>Volume:</strong> " + previewData.volume() + "<br>" +
+                        "<strong>Number:</strong> " + previewData.number() + "<br>" +
+                        "<strong>Pages:</strong> " + previewData.pages() + "<br>" +
+                        "<strong>Released on:</strong> " + previewData.releaseDate();
 
         return preview;
     }
@@ -185,5 +152,38 @@ public class EntryResource {
     /// @param id - also "demo" for the Chocolate.bib file
     private BibDatabaseContext getDatabaseContext(String id) throws IOException {
         return ServerUtils.getBibDatabaseContext(id, filesToServe, srvStateManager, preferences.getImportFormatPreferences());
+    }
+
+    private BibEntry getSingleEntryByCitationKey(BibDatabaseContext databaseContext, String id, String entryId) {
+        List<BibEntry> entriesByCitationKey = databaseContext.getDatabase().getEntriesByCitationKey(entryId);
+        if (entriesByCitationKey.isEmpty()) {
+            throw new NotFoundException("Entry with citation key '" + entryId + "' not found in library " + id);
+        }
+        if (entriesByCitationKey.size() > 1) {
+            LOGGER.warn("Multiple entries found with citation key '{}'. Using the first one.", entryId);
+        }
+
+        return entriesByCitationKey.getFirst();
+    }
+
+    private EntryPreviewData buildPreviewData(BibEntry entry) {
+        // TODO: Currently, the preview preferences are in GUI package, which is not accessible here.
+        return new EntryPreviewData(
+                entry.getField(StandardField.AUTHOR).orElse(NOT_AVAILABLE),
+                entry.getField(StandardField.TITLE).orElse(NOT_AVAILABLE),
+                entry.getField(StandardField.JOURNAL).orElse(NOT_AVAILABLE),
+                entry.getField(StandardField.VOLUME).orElse(NOT_AVAILABLE),
+                entry.getField(StandardField.NUMBER).orElse(NOT_AVAILABLE),
+                entry.getField(StandardField.PAGES).orElse(NOT_AVAILABLE),
+                entry.getField(StandardField.DATE).orElse(NOT_AVAILABLE));
+    }
+
+    private record EntryPreviewData(String author,
+                                    String title,
+                                    String journal,
+                                    String volume,
+                                    String number,
+                                    String pages,
+                                    String releaseDate) {
     }
 }
