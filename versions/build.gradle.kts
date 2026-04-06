@@ -73,6 +73,7 @@ dependencies.constraints {
     api("com.github.javaparser:javaparser-symbol-solver-core:3.28.0")
     api("com.github.sialcasa.mvvmFX:mvvmfx-validation:f195849ca9") //jitpack
     api("com.github.tomtung:latex2unicode_2.13:0.3.2")
+    api("org.scala-lang:scala-library:2.13.9")
     api("com.github.vatbub:mslinks:1.0.6.2")
     api("com.google.errorprone:error_prone_core:2.47.0")
     api("com.google.guava:guava:33.5.0-jre")
