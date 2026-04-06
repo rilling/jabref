@@ -12,6 +12,7 @@
 
 // requirements needed by jabkit projecxt need to be listed; requirements by jablib are loaded transitively
 //DEPS info.picocli:picocli:4.7.7
+//DEPS io.github.adr:e-adr:2.0.0
 
 //SOURCES ../jabkit/src/main/java/org/jabref/toolkit/converter/CaseInsensitiveEnumConverter.java
 //SOURCES ../jabkit/src/main/java/org/jabref/toolkit/converter/CitationFetcherTypeConverter.java
