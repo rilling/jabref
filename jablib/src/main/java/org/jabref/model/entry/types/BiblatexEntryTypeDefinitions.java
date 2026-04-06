@@ -222,14 +222,7 @@ public class BiblatexEntryTypeDefinitions {
             .withDetailFields(ARTICLE.getDetailOptionalFields())
             .build();
 
-    private static final BibEntryType PROCEEDINGS = new BibEntryTypeBuilder()
-            .withType(StandardEntryType.Proceedings)
-            .withRequiredFields(StandardField.TITLE, StandardField.DATE)
-            .withImportantFields(
-                    StandardField.SUBTITLE, StandardField.TITLEADDON, StandardField.MAINTITLE, StandardField.MAINSUBTITLE,
-                    StandardField.MAINTITLEADDON, StandardField.EVENTTITLE, StandardField.VOLUME, StandardField.PUBLISHER, StandardField.ISBN,
-                    StandardField.CHAPTER, StandardField.PAGES, StandardField.PAGETOTAL, StandardField.DOI, StandardField.EPRINT,
-                    StandardField.EPRINTCLASS, StandardField.EPRINTTYPE, StandardField.URL, StandardField.URLDATE)
+    private static final BibEntryType PROCEEDINGS = createProceedingsBase(StandardEntryType.Proceedings)
             .withDetailFields(StandardField.EDITOR, StandardField.EVENTTITLEADDON,
                     StandardField.EVENTDATE, StandardField.VENUE, StandardField.LANGUAGE, StandardField.PART,
                     StandardField.VOLUMES, StandardField.SERIES, StandardField.NUMBER, StandardField.NOTE, StandardField.ORGANIZATION,
@@ -237,14 +230,7 @@ public class BiblatexEntryTypeDefinitions {
                     StandardField.ADDENDUM, StandardField.PUBSTATE)
             .build();
 
-    private static final BibEntryType MVPROCEEDINGS = new BibEntryTypeBuilder()
-            .withType(StandardEntryType.MvProceedings)
-            .withRequiredFields(StandardField.TITLE, StandardField.DATE)
-            .withImportantFields(
-                    StandardField.SUBTITLE, StandardField.TITLEADDON, StandardField.MAINTITLE, StandardField.MAINSUBTITLE,
-                    StandardField.MAINTITLEADDON, StandardField.EVENTTITLE, StandardField.VOLUME, StandardField.PUBLISHER, StandardField.ISBN,
-                    StandardField.CHAPTER, StandardField.PAGES, StandardField.PAGETOTAL, StandardField.DOI, StandardField.EPRINT,
-                    StandardField.EPRINTCLASS, StandardField.EPRINTTYPE, StandardField.URL, StandardField.URLDATE)
+    private static final BibEntryType MVPROCEEDINGS = createProceedingsBase(StandardEntryType.MvProceedings)
             .withDetailFields(StandardField.EDITOR,
                     StandardField.EVENTTITLEADDON, StandardField.EVENTDATE, StandardField.VENUE, StandardField.LANGUAGE,
                     StandardField.VOLUMES, StandardField.SERIES, StandardField.NUMBER, StandardField.NOTE, StandardField.ORGANIZATION,
@@ -404,6 +390,17 @@ public class BiblatexEntryTypeDefinitions {
                     StandardField.TYPE, StandardField.VERSION, StandardField.NOTE, StandardField.ORGANIZATION,
                     StandardField.ADDENDUM, StandardField.PUBSTATE)
             .build();
+
+    private static BibEntryTypeBuilder createProceedingsBase(StandardEntryType type) {
+        return new BibEntryTypeBuilder()
+                .withType(type)
+                .withRequiredFields(StandardField.TITLE, StandardField.DATE)
+                .withImportantFields(
+                        StandardField.SUBTITLE, StandardField.TITLEADDON, StandardField.MAINTITLE, StandardField.MAINSUBTITLE,
+                        StandardField.MAINTITLEADDON, StandardField.EVENTTITLE, StandardField.VOLUME, StandardField.PUBLISHER, StandardField.ISBN,
+                        StandardField.CHAPTER, StandardField.PAGES, StandardField.PAGETOTAL, StandardField.DOI, StandardField.EPRINT,
+                        StandardField.EPRINTCLASS, StandardField.EPRINTTYPE, StandardField.URL, StandardField.URLDATE);
+    }
 
     public static final List<BibEntryType> ALL = Arrays.asList(ARTICLE, BOOK, MVBOOK, INBOOK, BOOKINBOOK, SUPPBOOK,
             BOOKLET, COLLECTION, MVCOLLECTION, INCOLLECTION, SUPPCOLLECTION, MANUAL, MISC, ONLINE, PATENT, PERIODICAL,
