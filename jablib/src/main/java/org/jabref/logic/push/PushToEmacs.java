@@ -1,14 +1,11 @@
 package org.jabref.logic.push;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.List;
 
 import org.jabref.logic.l10n.Localization;
 import org.jabref.logic.os.OS;
-import org.jabref.logic.util.HeadlessExecutorService;
 import org.jabref.logic.util.NotificationService;
 import org.jabref.model.entry.BibEntry;
 
@@ -82,33 +79,7 @@ public class PushToEmacs extends AbstractPushToApplication {
                         + "\"").concat(suffix);
             }
 
-            LOGGER.atDebug()
-                  .setMessage("Executing command {}")
-                  .addArgument(() -> Arrays.toString(com))
-                  .log();
-
-            final Process p = Runtime.getRuntime().exec(com);
-
-            HeadlessExecutorService.INSTANCE.executeAndWait(() -> {
-                try (InputStream out = p.getErrorStream()) {
-                    int c;
-                    StringBuilder sb = new StringBuilder();
-                    try {
-                        while ((c = out.read()) != -1) {
-                            sb.append((char) c);
-                        }
-                    } catch (IOException e) {
-                        LOGGER.warn("Could not read from stderr.", e);
-                    }
-                    // Error stream has been closed. See if there were any errors:
-                    if (!sb.toString().trim().isEmpty()) {
-                        LOGGER.warn("Push to Emacs error: {}", sb);
-                        couldNotPush = true;
-                    }
-                } catch (IOException e) {
-                    LOGGER.warn("Error handling std streams", e);
-                }
-            });
+            couldNotPush = PushToApplicationCommandRunner.run(com, LOGGER, "Emacs");
         } catch (IOException excep) {
             LOGGER.warn("Problem pushing to Emacs.", excep);
             couldNotCall = true;
