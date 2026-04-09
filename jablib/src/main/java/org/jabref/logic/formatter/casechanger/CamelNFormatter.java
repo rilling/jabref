@@ -23,18 +23,21 @@ public class CamelNFormatter extends Formatter {
     public String getKey() {
         return "camel_case_n";
     }
-
-    @Override
-    public String format(@NonNull String input) {
+    private String formatTitle(String input) {
         Title title = new Title(input);
 
         return title.getWords().stream()
-                    .map(Word -> {
-                        Word.toUpperFirst();
-                        return Word.toString();
+                    .map(word -> {
+                        word.toUpperFirst();
+                        return word.toString();
                     })
-                    .limit(length)
                     .collect(Collectors.joining(""));
+    }
+    @Override
+    public String format(@NonNull String input) {
+        return formatTitle(input).length() > length
+               ? formatTitle(input).substring(0, length)
+               : formatTitle(input);
     }
 
     @Override

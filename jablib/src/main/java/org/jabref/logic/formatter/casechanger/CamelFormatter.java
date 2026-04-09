@@ -18,17 +18,19 @@ public class CamelFormatter extends Formatter {
     public String getKey() {
         return "camel_case";
     }
-
-    @Override
-    public String format(@NonNull String input) {
+    private String formatTitle(String input) {
         Title title = new Title(input);
 
         return title.getWords().stream()
-                    .map(Word -> {
-                        Word.toUpperFirst();
-                        return Word.toString();
+                    .map(word -> {
+                        word.toUpperFirst();
+                        return word.toString();
                     })
                     .collect(Collectors.joining(""));
+    }
+    @Override
+    public String format(@NonNull String input) {
+        return formatTitle(input);
     }
 
     @Override
