@@ -1,6 +1,5 @@
 package org.jabref.gui.autocompleter;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -8,53 +7,21 @@ import java.util.Set;
 import javafx.collections.FXCollections;
 
 import org.jabref.logic.journals.JournalAbbreviationRepository;
-import org.jabref.model.database.BibDatabase;
 import org.jabref.model.entry.BibEntry;
 import org.jabref.model.entry.field.StandardField;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.jabref.gui.autocompleter.AutoCompleterUtil.getRequest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class FieldValueSuggestionProviderTest {
+class FieldValueSuggestionProviderTest extends AbstractAutoCompleterTest {
 
-    private FieldValueSuggestionProvider autoCompleter;
-    private BibDatabase database;
-
-    @BeforeEach
-    void setUp() {
-        database = new BibDatabase();
-        autoCompleter = new FieldValueSuggestionProvider(StandardField.TITLE, database);
-    }
-
-    @Test
-    void completeWithoutAddingAnythingReturnsNothing() {
-        Collection<String> result = autoCompleter.provideSuggestions(getRequest("test"));
-        assertEquals(List.of(), result);
-    }
-
-    @Test
-    void completeAfterAddingEmptyEntryReturnsNothing() {
-        BibEntry entry = new BibEntry();
-        database.insertEntry(entry);
-
-        Collection<String> result = autoCompleter.provideSuggestions(getRequest("test"));
-        assertEquals(List.of(), result);
-    }
-
-    @Test
-    void completeAfterAddingEntryWithoutFieldReturnsNothing() {
-        BibEntry entry = new BibEntry();
-        entry.setField(StandardField.AUTHOR, "testAuthor");
-        database.insertEntry(entry);
-
-        Collection<String> result = autoCompleter.provideSuggestions(getRequest("test"));
-        assertEquals(List.of(), result);
+    @Override
+    protected SuggestionProvider<String> createAutoCompleter() {
+        return new FieldValueSuggestionProvider(StandardField.TITLE, database);
     }
 
     @Test
@@ -75,16 +42,6 @@ class FieldValueSuggestionProviderTest {
     }
 
     @Test
-    void completeValueReturnsValue() {
-        BibEntry entry = new BibEntry();
-        entry.setField(StandardField.TITLE, "testValue");
-        database.insertEntry(entry);
-
-        Collection<String> result = autoCompleter.provideSuggestions(getRequest("testValue"));
-        assertEquals(List.of("testValue"), result);
-    }
-
-    @Test
     void completeBeginnigOfValueReturnsValue() {
         BibEntry entry = new BibEntry();
         entry.setField(StandardField.TITLE, "testValue");
@@ -92,48 +49,6 @@ class FieldValueSuggestionProviderTest {
 
         Collection<String> result = autoCompleter.provideSuggestions(getRequest("test"));
         assertEquals(List.of("testValue"), result);
-    }
-
-    @Test
-    void completeLowercaseValueReturnsValue() {
-        BibEntry entry = new BibEntry();
-        entry.setField(StandardField.TITLE, "testValue");
-        database.insertEntry(entry);
-
-        Collection<String> result = autoCompleter.provideSuggestions(getRequest("testvalue"));
-        assertEquals(List.of("testValue"), result);
-    }
-
-    @Test
-    void completeNullThrowsException() {
-        BibEntry entry = new BibEntry();
-        entry.setField(StandardField.TITLE, "testKey");
-        database.insertEntry(entry);
-
-        assertThrows(NullPointerException.class, () -> autoCompleter.provideSuggestions(getRequest(null)));
-    }
-
-    @Test
-    void completeEmptyStringReturnsNothing() {
-        BibEntry entry = new BibEntry();
-        entry.setField(StandardField.TITLE, "testKey");
-        database.insertEntry(entry);
-
-        Collection<String> result = autoCompleter.provideSuggestions(getRequest(""));
-        assertEquals(List.of(), result);
-    }
-
-    @Test
-    void completeReturnsMultipleResults() {
-        BibEntry entryOne = new BibEntry();
-        entryOne.setField(StandardField.TITLE, "testValueOne");
-        database.insertEntry(entryOne);
-        BibEntry entryTwo = new BibEntry();
-        entryTwo.setField(StandardField.TITLE, "testValueTwo");
-        database.insertEntry(entryTwo);
-
-        Collection<String> result = autoCompleter.provideSuggestions(getRequest("testValue"));
-        assertEquals(Arrays.asList("testValueOne", "testValueTwo"), result);
     }
 
     @Test
