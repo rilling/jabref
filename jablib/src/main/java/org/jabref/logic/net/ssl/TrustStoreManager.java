@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 public class TrustStoreManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TrustStoreManager.class);
-    private static final String STORE_PASSWORD = "changeit";
+    private static final String STORE_PASSWORD = System.getProperty("javax.net.ssl.trustStorePassword", "changeit");
 
     private final Path storePath;
 
