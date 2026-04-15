@@ -46,6 +46,14 @@
       <version>6.0-SNAPSHOT</version>
     </dependency>
 
+
+      <dependency>
+          <groupId>org.scala-lang</groupId>
+          <artifactId>scala-library</artifactId>
+          <version>2.13.9</version>
+      </dependency>
+
+
     <!-- JabRef relies on PR https://github.com/unicode-org/icu/pull/2127; for experiments the release version is OK -->
     <dependency>
       <groupId>com.ibm.icu</groupId>
