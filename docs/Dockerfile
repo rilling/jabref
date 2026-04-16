@@ -1,4 +1,5 @@
-FROM ruby:2.7
+FROM ruby:3.3-bookworm
+
 
 ENV LC_ALL=C.UTF-8
 ENV LANG=en_US.UTF-8
