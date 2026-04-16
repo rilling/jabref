@@ -30,18 +30,27 @@ import org.slf4j.LoggerFactory;
 public class TrustStoreManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TrustStoreManager.class);
-    private static final String STORE_PASSWORD = "changeit";
+    private static final String STORE_PASSWORD_SYSTEM_PROPERTY = "javax.net.ssl.trustStorePassword";
+    private static final String STORE_PASSWORD_ENVIRONMENT_VARIABLE = "JABREF_TRUSTSTORE_PASSWORD";
 
     private final Path storePath;
 
     private KeyStore store;
+
+    private static char[] getStorePassword() {
+        String password = System.getProperty(STORE_PASSWORD_SYSTEM_PROPERTY);
+        if (password == null) {
+            password = System.getenv(STORE_PASSWORD_ENVIRONMENT_VARIABLE);
+        }
+        return password != null ? password.toCharArray() : null;
+    }
 
     public TrustStoreManager(Path storePath) {
         this.storePath = storePath;
         createTruststoreFileIfNotExist(storePath);
         try {
             store = KeyStore.getInstance(KeyStore.getDefaultType());
-            store.load(Files.newInputStream(storePath), STORE_PASSWORD.toCharArray());
+            store.load(Files.newInputStream(storePath), getStorePassword());
         } catch (CertificateException | IOException | NoSuchAlgorithmException | KeyStoreException e) {
             LOGGER.warn("Error while loading trust store from: {}", storePath.toAbsolutePath(), e);
         }
@@ -93,7 +102,7 @@ public class TrustStoreManager {
 
     public void flush() {
         try {
-            store.store(Files.newOutputStream(storePath), STORE_PASSWORD.toCharArray());
+            store.store(Files.newOutputStream(storePath), getStorePassword());
         } catch (KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException e) {
             LOGGER.warn("Error while flushing trust store", e);
         }
@@ -171,7 +180,7 @@ public class TrustStoreManager {
         // Adapt to load your keystore
         try (InputStream myKeys = Files.newInputStream(myStorePath)) {
             KeyStore myTrustStore = KeyStore.getInstance("jks");
-            myTrustStore.load(myKeys, STORE_PASSWORD.toCharArray());
+            myTrustStore.load(myKeys, getStorePassword());
 
             return findDefaultTrustManager(myTrustStore);
         }
