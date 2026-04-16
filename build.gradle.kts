@@ -95,7 +95,7 @@ sonar {
     }
 }
 
-tasks.named("sonarqube") {
+tasks.matching { it.name == "sonar" || it.name == "sonarqube" }.configureEach {
     onlyIf {
         System.getenv("SONAR_TOKEN") != null
     }
