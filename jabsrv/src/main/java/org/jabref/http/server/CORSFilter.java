@@ -9,9 +9,15 @@ import jakarta.ws.rs.ext.Provider;
 public class CORSFilter implements ContainerResponseFilter {
     @Override
     public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) {
-        responseContext.getHeaders().add("Access-Control-Allow-Origin", "*");
-        responseContext.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-        responseContext.getHeaders().add("Access-Control-Allow-Headers", "origin, content-type, accept");
-        responseContext.getHeaders().add("Access-Control-Allow-Credentials", "false");
+        String origin = requestContext.getHeaderString("Origin");
+
+        // Allow only local origins (localhost or 127.0.0.1) with an optional port.
+        if (origin != null && origin.matches("^https?://(localhost|127\\.0\\.0\\.1)(:\\d+)?$")) {
+            responseContext.getHeaders().putSingle("Access-Control-Allow-Origin", origin);
+        }
+
+        responseContext.getHeaders().putSingle("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        responseContext.getHeaders().putSingle("Access-Control-Allow-Headers", "origin, content-type, accept");
+        responseContext.getHeaders().putSingle("Access-Control-Allow-Credentials", "false");
     }
 }
