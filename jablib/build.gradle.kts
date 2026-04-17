@@ -35,6 +35,12 @@ configurations.antlr {
     extendsFrom(configurations.internal.get())
 }
 
+configurations.all {
+    resolutionStrategy {
+        force("org.scala-lang:scala-library:2.13.9")
+    }
+}
+
 configurations {
     // Treat the ANTLR compiler as a separate tool that should not end up on the compile/runtime
     // classpath of our runtime.
