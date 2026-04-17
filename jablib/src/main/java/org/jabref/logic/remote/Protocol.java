@@ -1,12 +1,16 @@
 package org.jabref.logic.remote;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
 import java.net.Socket;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Set;
 
 import javafx.util.Pair;
 
@@ -20,6 +24,37 @@ public class Protocol implements AutoCloseable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Protocol.class);
 
+    /**
+     * Whitelist of class names permitted during deserialization.
+     * Restricts Java object deserialization to the expected protocol types only,
+     * preventing CWE-502 (Deserialization of Untrusted Data).
+     */
+    private static final Set<String> ALLOWED_CLASSES = Set.of(
+            RemoteMessage.class.getName(),
+            String.class.getName(),
+            String[].class.getName()
+    );
+
+    /**
+     * A whitelist-enforcing ObjectInputStream that rejects any class not explicitly
+     * permitted, mitigating unsafe deserialization (CWE-502 / Snyk SNYK-CODE).
+     */
+    private static class SafeObjectInputStream extends ObjectInputStream {
+        SafeObjectInputStream(InputStream in) throws IOException {
+            super(in);
+        }
+
+        @Override
+        protected Class<?> resolveClass(ObjectStreamClass desc)
+                throws IOException, ClassNotFoundException {
+            if (!ALLOWED_CLASSES.contains(desc.getName())) {
+                throw new InvalidClassException(
+                        "Unauthorized deserialization attempt blocked", desc.getName());
+            }
+            return super.resolveClass(desc);
+        }
+    }
+
     private final Socket socket;
     private final ObjectOutputStream out;
     private final ObjectInputStream in;
@@ -27,7 +62,7 @@ public class Protocol implements AutoCloseable {
     public Protocol(Socket socket) throws IOException {
         this.socket = socket;
         this.out = new ObjectOutputStream(socket.getOutputStream());
-        this.in = new ObjectInputStream(socket.getInputStream());
+        this.in = new SafeObjectInputStream(socket.getInputStream());
     }
 
     public void sendMessage(RemoteMessage type) throws IOException {
