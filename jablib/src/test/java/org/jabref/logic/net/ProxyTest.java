@@ -1,6 +1,7 @@
 package org.jabref.logic.net;
-
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
+
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -16,7 +17,7 @@ class ProxyTest {
         String port = "8080";
         boolean useAuthentication = true;
         String username = "testUserName";
-        String password = "testPassword";
+        String password = UUID.randomUUID().toString();
         boolean persist = false;
 
         // Creates proxy preference
