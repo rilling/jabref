@@ -29,8 +29,8 @@ import org.slf4j.LoggerFactory;
 public class AiPreferences {
     private static final Logger LOGGER = LoggerFactory.getLogger(AiPreferences.class);
 
-    private static final String KEYRING_AI_SERVICE = "org.jabref.ai";
-    private static final String KEYRING_AI_SERVICE_ACCOUNT = "apiKey";
+    private static final String AI_KEYRING_SERVICE_NAME = AiPreferences.class.getPackageName();
+    private static final String AI_KEYRING_ENTRY_PREFIX = "api-key";
 
     private final BooleanProperty enableAi;
     private final BooleanProperty autoGenerateEmbeddings;
@@ -140,7 +140,7 @@ public class AiPreferences {
 
     public String getApiKeyForAiProvider(AiProvider aiProvider) {
         try (final Keyring keyring = Keyring.create()) {
-            return keyring.getPassword(KEYRING_AI_SERVICE, KEYRING_AI_SERVICE_ACCOUNT + "-" + aiProvider.name());
+            return keyring.getPassword(AI_KEYRING_SERVICE_NAME, AI_KEYRING_ENTRY_PREFIX + "-" + aiProvider.name());
         } catch (PasswordAccessException e) {
             LOGGER.debug("No API key stored for provider {}. Returning an empty string", aiProvider.getLabel());
             return "";
@@ -154,12 +154,12 @@ public class AiPreferences {
         try (final Keyring keyring = Keyring.create()) {
             if (StringUtil.isNullOrEmpty(newKey)) {
                 try {
-                    keyring.deletePassword(KEYRING_AI_SERVICE, KEYRING_AI_SERVICE_ACCOUNT + "-" + aiProvider.name());
+                    keyring.deletePassword(AI_KEYRING_SERVICE_NAME, AI_KEYRING_ENTRY_PREFIX + "-" + aiProvider.name());
                 } catch (PasswordAccessException ex) {
                     LOGGER.debug("API key for provider {} not stored in keyring. JabRef does not store an empty key.", aiProvider.getLabel());
                 }
             } else {
-                keyring.setPassword(KEYRING_AI_SERVICE, KEYRING_AI_SERVICE_ACCOUNT + "-" + aiProvider.name(), newKey);
+                keyring.setPassword(AI_KEYRING_SERVICE_NAME, AI_KEYRING_ENTRY_PREFIX + "-" + aiProvider.name(), newKey);
             }
         } catch (Exception e) {
             LOGGER.warn("JabRef could not open keyring for storing {} API token", aiProvider.getLabel(), e);
