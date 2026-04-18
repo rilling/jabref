@@ -1,4 +1,6 @@
-FROM ruby:2.7
+FROM ruby:4.0.2
+
+RUN apt-get update && apt-get upgrade -y
 
 ENV LC_ALL=C.UTF-8
 ENV LANG=en_US.UTF-8

@@ -110,7 +110,7 @@ public class EntryResource {
         BibDatabaseContext databaseContext = getDatabaseContext(id);
         List<BibEntry> entriesByCitationKey = databaseContext.getDatabase().getEntriesByCitationKey(entryId);
         if (entriesByCitationKey.isEmpty()) {
-            throw new NotFoundException("Entry with citation key '" + entryId + "' not found in library " + id);
+            throw new NotFoundException("Requested entry was not found.");
         }
 
         // 1. Determine BibEntry
